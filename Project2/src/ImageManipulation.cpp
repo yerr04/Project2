@@ -226,7 +226,7 @@ Image Rotate(Image &image)
     vector<Image::Pixel> pixels1 = image.getPixels();
     vector<Image::Pixel> pixels3;
 
-    for (unsigned int i = pixels1.size() - 1; i > 0; i--)
+    for (int i = pixels1.size() -1; i >= 0; i--)
     {
         Image::Pixel pixel1 = pixels1[i];
         Image::Pixel pixel3;

@@ -3,9 +3,12 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 int runTests(Image &example, Image &img)
 {
-    if (example == img)
+	// if the images are equal, return 1
+    if (img == example)
     {
         std::cout << "Test Passed" << std::endl;
         return 1;
@@ -17,7 +20,7 @@ int runTests(Image &example, Image &img)
     }
 }
 
-int main()
+int testing()
 {
     int passed = 0;
     int failed = 0;
@@ -74,17 +77,11 @@ int main()
     example9.loadImage("./examples/EXAMPLE_part9.tga");
     example10.loadImage("./examples/EXAMPLE_part10.tga");
 
-
-    // READ AND WRITE A TEST IMAGE
-    std::cout << "READ AND WRITE A TEST IMAGE" << std::endl;
-    Image test = car;
-    test.writeImage("./output/test.tga");
-    passed += runTests(car, test);
     // Part 1: Multiply
     std:: cout << "Part 1: Multiply" << std::endl;
     Image multiply = Multiply(layer1, pattern1);
     multiply.writeImage("./output/part1.tga");
-    passed += runTests(multiply, example1);
+    passed += runTests(example1, multiply);
 
     //Part 2: Subtract
     std:: cout << "Part 2: Subtract" << std::endl;
@@ -152,4 +149,33 @@ int main()
     std::cout << "Done" << std::endl;
     std::cout << "Passed " << passed << " out of 12 tests" << std::endl;
     return 0;
+}
+
+int main(int argc, char* argv)
+{
+    // creating a command line interface
+
+    // if no arguments are provided, or if the first and only argument is --help, print the help message
+    for (int i = 0; i < argc; i++)
+    {
+        if (argv[i] == "--help")
+        {
+            std::cout << "Usage: ./main [OPTION]... [FILE]..." << std::endl;
+            std::cout << "Perform image processing operations on a set of images." << std::endl;
+            std::cout << "Options:" << std::endl;
+            std::cout << "  --help\t\t\tPrint this help message" << std::endl;
+            std::cout << "  --multiply [FILE] [FILE]\tMultiply two images" << std::endl;
+            std::cout << "  --subtract [FILE] [FILE]\tSubtract two images" << std::endl;
+            std::cout << "  --screen [FILE] [FILE]\tScreen two images" << std::endl;
+            std::cout << "  --overlay [FILE] [FILE]\tOverlay two images" << std::endl;
+            std::cout << "  --addGreen [FILE]\t\tAdd green to an image" << std::endl;
+            std::cout << "  --scaleRed [FILE]\t\tScale red in an image" << std::endl;
+            std::cout << "  --splitChannels [FILE]\tSplit channels in an image" << std::endl;
+            std::cout << "  --combineChannels [FILE] [FILE] [FILE]\tCombine channels in an image" << std::endl;
+            std::cout << "  --rotate [FILE]\t\tRotate an image" << std::endl;
+            return 0;
+        }
+    }
+    
+
 }

@@ -40,7 +40,7 @@ void Image::loadImage(string filename)
     }
     else
     {
-        cout << "Unable to open file";
+        cout << "Unable to open file" << endl;
     }
     file.close();
 }
@@ -133,9 +133,10 @@ vector<Image::Pixel> Image::getPixels()
 
 bool Image::operator==(Image &rhs){
     for (unsigned int i = 0; i < pixels.size(); i++){
-        if (pixels[i].blue != rhs.pixels[i].blue && pixels[i].green != rhs.pixels[i].green && pixels[i].red != rhs.pixels[i].red){
-            return false;
-        }
+		if ((pixels[i].blueChar == rhs.pixels[i].blueChar) && (pixels[i].greenChar == rhs.pixels[i].greenChar) && (pixels[i].redChar == rhs.pixels[i].redChar)) {
+			return true;
+		}
     }
-    return true;
+    return false;
 }
+
