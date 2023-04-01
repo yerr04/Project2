@@ -23,9 +23,9 @@ Image Screen(Image &image1, Image &image2);
 
 Image Overlay(Image &image1, Image &image2);
 
-Image addGreen(Image &image);
+Image addColor(Image &image, string color, float add);
 
-Image scaleRed(Image &image);
+Image scaleColor(Image &image, string color, float scale);
 
 Image Rotate(Image &image);
 

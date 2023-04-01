@@ -190,7 +190,7 @@ Image Overlay(Image &image1, Image &image2)
 }
 
 // add 200 to the green channel
-Image addColor(Image &image, string color, int amount)
+Image addColor(Image &image, string color, float amount)
 {
     Image image3;
     Image::Header header = image.getHeader();
@@ -312,7 +312,7 @@ Image splitChannels(string split, Image &image)
     return image3;
 }
 
-Image scaleColor(Image &image)
+Image scaleColor(Image &image, string color, float amount)
 {
     Image image3;
     Image::Header header = image.getHeader();
@@ -324,21 +324,60 @@ Image scaleColor(Image &image)
 
     for (int i = 0; i < pixels1.size(); i++)
     {
-        Image::Pixel pixel1 = pixels1[i];
-        Image::Pixel pixel3;
+        if (color == "red") {
+            Image::Pixel pixel1 = pixels1[i];
+            Image::Pixel pixel3;
 
-        float red = normalize((float)pixel1.red) * 4.0f;
-        unsigned int redInt = (unsigned int)((red * 255) + 0.5f);
-        redInt = clamp(redInt);
-        unsigned char redChar = image3.itoc(redInt);
+            float red = normalize((float)pixel1.red) * amount;
+            unsigned int redInt = (unsigned int)(scale(red * 255));
+            redInt = clamp(redInt);
+            unsigned char redChar = image3.itoc(redInt);
 
-        pixel3.redChar = redChar;
+            pixel3.redChar = redChar;
 
-        pixel3.greenChar = pixel1.greenChar;
+            pixel3.greenChar = pixel1.greenChar;
 
-        pixel3.blueChar = 0;
+            pixel3.blueChar = pixel1.blueChar;
 
-        pixels3.push_back(pixel3);
+            pixels3.push_back(pixel3);
+        }
+        else if (color == "green") {
+            Image::Pixel pixel1 = pixels1[i];
+            Image::Pixel pixel3;
+
+            float green = normalize((float)pixel1.green) * amount;
+            unsigned int greenInt = (unsigned int)(scale(green * 255));
+            greenInt = clamp(greenInt);
+            unsigned char greenChar = image3.itoc(greenInt);
+
+            pixel3.redChar = pixel1.redChar;
+
+            pixel3.greenChar = greenChar;
+
+            pixel3.blueChar = pixel1.blueChar;
+
+            pixels3.push_back(pixel3);
+        }
+        else if (color == "blue") {
+            Image::Pixel pixel1 = pixels1[i];
+            Image::Pixel pixel3;
+
+            float blue = normalize((float)pixel1.blue) * amount;
+            unsigned int blueInt = (unsigned int)(scale(blue * 255));
+            blueInt = clamp(blueInt);
+            unsigned char blueChar = image3.itoc(blueInt);
+
+            pixel3.redChar = pixel1.redChar;
+
+            pixel3.greenChar = pixel1.greenChar;
+
+            pixel3.blueChar = blueChar;
+
+            pixels3.push_back(pixel3);
+        }
+        else {
+            cout << "Invalid color" << endl;
+        }
     }
     image3.setPixels(pixels3);
     return image3;
