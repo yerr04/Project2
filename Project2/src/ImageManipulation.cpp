@@ -190,7 +190,7 @@ Image Overlay(Image &image1, Image &image2)
 }
 
 // add 200 to the green channel
-Image addGreen(Image &image)
+Image addColor(Image &image, string color, int amount)
 {
     Image image3;
     Image::Header header = image.getHeader();
@@ -200,16 +200,47 @@ Image addGreen(Image &image)
     vector<Image::Pixel> pixels1 = image.getPixels();
     vector<Image::Pixel> pixels3;
 
-    for (int i = 0; i < pixels1.size(); i++)
-    {
-        Image::Pixel pixel1 = pixels1[i];
-        Image::Pixel pixel3;
+    if (color == "red") {
+        for (int i = 0; i < pixels1.size(); i++)
+        {
+            Image::Pixel pixel1 = pixels1[i];
+            Image::Pixel pixel3;
 
-        pixel3.redChar = pixel1.redChar;
-        pixel3.greenChar = clamp(pixel1.greenChar + 200);
-        pixel3.blueChar = pixel1.blueChar;
+            pixel3.redChar = clamp(pixel1.redChar + amount);
+            pixel3.greenChar = pixel1.greenChar;
+            pixel3.blueChar = pixel1.blueChar;
 
-        pixels3.push_back(pixel3);
+            pixels3.push_back(pixel3);
+        }
+    }
+    else if (color == "green") {
+        for (int i = 0; i < pixels1.size(); i++)
+        {
+            Image::Pixel pixel1 = pixels1[i];
+            Image::Pixel pixel3;
+
+            pixel3.redChar = pixel1.redChar;
+            pixel3.greenChar = clamp(pixel1.greenChar + amount);
+            pixel3.blueChar = pixel1.blueChar;
+
+            pixels3.push_back(pixel3);
+        }
+    }
+    else if (color == "blue") {
+        for (int i = 0; i < pixels1.size(); i++)
+        {
+            Image::Pixel pixel1 = pixels1[i];
+            Image::Pixel pixel3;
+
+            pixel3.redChar = pixel1.redChar;
+            pixel3.greenChar = pixel1.greenChar;
+            pixel3.blueChar = clamp(pixel1.blueChar + amount);
+
+            pixels3.push_back(pixel3);
+        }
+    }
+    else {
+        cout << "Invalid color" << endl;
     }
     image3.setPixels(pixels3);
     return image3;
@@ -281,7 +312,7 @@ Image splitChannels(string split, Image &image)
     return image3;
 }
 
-Image scaleRed(Image &image)
+Image scaleColor(Image &image)
 {
     Image image3;
     Image::Header header = image.getHeader();

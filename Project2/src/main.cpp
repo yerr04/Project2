@@ -1,9 +1,9 @@
 #include "Image.h"
 #include "ImageManipulation.h"
+#include <filesystem>
 #include <iostream>
 #include <string>
 
-using namespace std;
 
 int runTests(Image &example, Image &img)
 {
@@ -110,16 +110,16 @@ int testing()
     passed += runTests(example5, overlay);
 
     //Part 6: Add green to car
-    std::cout << "Part 6: Add Green" << std::endl;
-    Image addGreenCar = addGreen(car);
-    addGreenCar.writeImage("./output/part6.tga");
-    passed += runTests(example6, addGreenCar);
+    // std::cout << "Part 6: Add Green" << std::endl;
+    // Image addGreenCar = addGreen(car);
+    // addGreenCar.writeImage("./output/part6.tga");
+    // passed += runTests(example6, addGreenCar);
 
-    //Part 7: Multiply the red channel in car.tga by 4, and scale the  blue channel to 0, then write the result to part7.tga
-    std::cout << "Part 7: Multiply Red and Scale Blue" << std::endl;
-    Image scaleRedCar = scaleRed(car);
-    scaleRedCar.writeImage("./output/part7.tga");
-    passed += runTests(example7, scaleRedCar);
+    // //Part 7: Multiply the red channel in car.tga by 4, and scale the  blue channel to 0, then write the result to part7.tga
+    // std::cout << "Part 7: Multiply Red and Scale Blue" << std::endl;
+    // Image scaleRedCar = scaleRed(car);
+    // scaleRedCar.writeImage("./output/part7.tga");
+    // passed += runTests(example7, scaleRedCar);
 
     //Part 8: Load car.tga and split the color channels into three separate images. Write the three images to part8_blue.tga, part8_green.tga, and part8_red.tga
     std::cout << "Part 8: Split Channels" << std::endl;
@@ -151,31 +151,144 @@ int testing()
     return 0;
 }
 
-int main(int argc, char* argv)
-{
-    // creating a command line interface
+void helpMessage(){
+    std::cout << "Project 2: Image Processing, Spring 2023" << std::endl;
+    std::cout << "Usage:" << std::endl;
+    std::cout << "  ./project2.out [output] [firstImage] [method] [...]" << std::endl;
+}
 
-    // if no arguments are provided, or if the first and only argument is --help, print the help message
-    for (int i = 0; i < argc; i++)
+int main(int argc, char* argv[])
+{
+    if (argc == 1 || (argc == 2 && std::string(argv[1]) == "--help")){
+        helpMessage();
+        return 0;
+    }
+
+    Image trackingImage;
+
+    std::string output = argv[1];
+    std::string firstImage = argv[2];
+
+    if (firstImage.find(".tga") == std::string::npos) 
     {
-        if (argv[i] == "--help")
+        std::cerr << "Invalid argument, invalid file name." << std::endl;
+        return 1;
+    }
+
+    // iterate through the arguments
+    for (int i = 3; i < argc; i++)
+    {
+        std::string method = argv[i];
+
+        if (method == "multiply" || method == "subtract" || method == "overlay" || method == "screen")
         {
-            std::cout << "Usage: ./main [OPTION]... [FILE]..." << std::endl;
-            std::cout << "Perform image processing operations on a set of images." << std::endl;
-            std::cout << "Options:" << std::endl;
-            std::cout << "  --help\t\t\tPrint this help message" << std::endl;
-            std::cout << "  --multiply [FILE] [FILE]\tMultiply two images" << std::endl;
-            std::cout << "  --subtract [FILE] [FILE]\tSubtract two images" << std::endl;
-            std::cout << "  --screen [FILE] [FILE]\tScreen two images" << std::endl;
-            std::cout << "  --overlay [FILE] [FILE]\tOverlay two images" << std::endl;
-            std::cout << "  --addGreen [FILE]\t\tAdd green to an image" << std::endl;
-            std::cout << "  --scaleRed [FILE]\t\tScale red in an image" << std::endl;
-            std::cout << "  --splitChannels [FILE]\tSplit channels in an image" << std::endl;
-            std::cout << "  --combineChannels [FILE] [FILE] [FILE]\tCombine channels in an image" << std::endl;
-            std::cout << "  --rotate [FILE]\t\tRotate an image" << std::endl;
-            return 0;
+            i++;
+            if (i >= argc)
+            {
+                std::cerr << "Invalid argument, missing image name." << std::endl;
+                return 1;
+            }
+            std::string secondImage = argv[i];
+            if (secondImage.find(".tga") == std::string::npos)
+            {
+                std::cerr << "Invalid argument, invalid file name." << std::endl;
+                return 1;
+            }
+            Image image2;
+            try {
+                image2.loadImage(".\\" + secondImage);
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Invalid argument, could not load image." << std::endl;
+                return 1;
+            }
+
+            if (method == "multiply")
+            {
+                trackingImage = Multiply(trackingImage, image2);
+            }
+            else if (method == "subtract")
+            {
+                trackingImage = Subtract(trackingImage, image2);
+            }
+            else if (method == "overlay")
+            {
+                trackingImage = Overlay(trackingImage, image2);
+            }
+            else if (method == "screen")
+            {
+                trackingImage = Screen(trackingImage, image2);
+            }
+        }
+        else if (method == "combine")
+        {
+            i++;
+            if (i >= argc)
+            {
+                std::cerr << "Invalid argument, missing image name." << std::endl;
+                return 1;
+            }
+            std::string greenFile = argv[i];
+            Image green;
+            try {
+                green.loadImage(greenFile);
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Invalid argument, could not load image." << std::endl;
+                return 1;
+            }
+
+            i++;
+            if (i >= argc)
+            {
+                std::cerr << "Invalid argument, missing image name." << std::endl;
+                return 1;
+            }
+
+            std::string blueFile = argv[i];
+            Image blue;
+            try {
+                blue.loadImage(blueFile);
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Invalid argument, could not load image." << std::endl;
+                return 1;
+            }
+
+            trackingImage = combineChannels(trackingImage, green, blue);
+        }
+        else if (method == "flip")
+        {
+            trackingImage = Rotate(trackingImage);
+        }
+        else if (method == "onlyred" || method == "onlygreen" || method == "onlyblue")
+        {
+            trackingImage = splitChannels(method.substr(4), trackingImage);
+        }
+        else if (method.substr(0, 2) == "add"){
+            i++;
+            if (i >= argc)
+            {
+                std::cerr << "Invalid argument, missing image name." << std::endl;
+                return 1;
+            }
+            int addnum = std::stoi(argv[i]);
+            trackingImage = addColor(trackingImage, method.substr(3), addnum);
+        }
+        else
+        {
+            std::cerr << "Invalid argument, invalid method." << std::endl;
+            return 1;
         }
     }
-    
 
+    try {
+        trackingImage.writeImage(output);
+        std::cout << "... and saving output to " << output << "!" << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Invalid argument, could not write image." << std::endl;
+        return 1;
+        }
+    return 0;
 }
